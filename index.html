@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Clock</title>
+	<style>
+	ol,
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	h1 {
+		margin: 0;
+		padding: 0;
+		text-align: center;
+	}
+	.clock {
+		position: relative;
+		width: 200px;
+		height: 200px;
+		border-radius: 50%;
+		background: #333;
+		margin: 50px auto;
+	}
+	.clock .circle {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform-origin: left center;
+		background: #fff;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		margin: -5px 0 0 -5px;
+	}
+	.clock .line-hour li,
+	.clock .line-minute li {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform-origin: left center;
+		background: #fff;
+		height: 2px;
+	}
+	.clock .line-hour li {
+		width: 10px;
+	}
+	.clock .line-minute li {
+		width: 5px;
+	}
+	.clock .number {
+		position: absolute;
+		height: 140px;
+		width: 140px;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%,-50%);
+		font-family: "Microsoft Yahei";
+		color: #fff;
+		font-size: 12px;
+	}
+	.clock .number li {
+		position: absolute;
+		transform: translate(-50%,-50%);
+	}
+	.clock .pointer li {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform-origin: left center;
+		background: #fff;
+	}
+	.clock li.hour {
+		width: 45px;
+		height: 3px;
+		margin-top: -1px;
+	}
+	.clock li.minute {
+		width: 60px;
+		height: 2px;
+		margin-top: -1px;
+	}
+	.clock li.second {
+		width: 80px;
+		height: 1px;
+		margin-top: -1px;
+	}
+	</style>
+</head>
+<body>
+	<div class="clock">
+		<ul class="line-hour"></ul>
+		<ul class="line-minute"></ul>
+		<ol class="number"></ol>
+		<ul class="pointer">
+			<li class="hour"></li>
+			<li class="minute"></li>
+			<li class="second"></li>
+			<li class="circle"></li>
+		</ul>
+	</div>
+	<h1>Clock</h1>
+	<script>
+
+	drawLines(document.querySelector(".clock .line-minute"),60,85);
+	drawLines(document.querySelector(".clock .line-hour"),12,80);
+	drawNumbers(document.querySelector(".clock .number"),12)
+	ticktock();
+
+	function drawLines (wrap,num,translateX) {
+		var gap = 360 / num;
+		var str = "";
+		for (var i = 0; i < num; i++) {
+			str += "<li style='transform:rotate(" + (gap * i) + "deg) translate(" + translateX + "px,-50%)'></li>" 
+		}
+		wrap.innerHTML = str;
+	}
+
+	function getStyle (ele,css) {
+		return parseFloat(ele.currentStyle ? ele.currentStyle[css] : window.getComputedStyle(ele,null)[css]);
+	}
+
+	function drawNumbers (wrap,num) {
+		var r = getStyle(wrap,"width") / 2;
+		var str = "";
+		for (var i = 0; i < num; i++) {
+			var angle = (360 / num) * ((i + 1) - 3) * (Math.PI / 180);
+			var x = r + r * Math.cos(angle);
+			var y = r + r * Math.sin(angle);
+			str += "<li style='left:" + x + "px;top:" + y + "px;'>" + (i + 1) + "</li>";
+		}
+		wrap.innerHTML = str;
+	}
+
+	function ticktock () {
+		var hour = document.querySelector(".clock .hour");
+		var minute = document.querySelector(".clock .minute");
+		var second = document.querySelector(".clock .second");
+		var h1 = document.querySelector("h1");
+		function clockfix (time) {
+			return time < 10 ? "0" + time : time;
+		}
+		setInterval(function () {
+			var now = new Date();
+			var h = now.getHours();
+			var m = now.getMinutes();
+			var s = now.getSeconds();
+			var sAngle = s * 360 / 60 - 90;
+			var mAngle = m * 360 / 60 + s * 360 / 60 / 60 - 90;
+			var hAngle = h * 360 / 12 + m * 360 / 60 / 12 - 90;
+			hour.style.transform = "rotate(" + hAngle + "deg)";
+			minute.style.transform = "rotate(" + mAngle + "deg)";
+			second.style.transform = "rotate(" + sAngle + "deg)";
+			h1.innerHTML = clockfix(h) + ":" + clockfix(m) + ":" + clockfix(s);
+			document.title = "Clock " + h1.innerHTML;
+		}, 1000)
+	}
+
+	</script>
+</body>
+</html>
